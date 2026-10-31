@@ -1,0 +1,9 @@
+# Fotos del cuaderno de una menor (letra, nombres de compañeros): solo local
+img/
+CLAUDE.md
+__pycache__/
+*.bak
+*~
+.env
+.env.*
+.DS_Store

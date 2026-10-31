@@ -1,0 +1,100 @@
+# francés|español1,español2,...|categoría
+# Fuente: fotos del cuaderno (img/). Varias formas francesas separadas por " / ".
+# --- description ---
+la description|la descripción|description
+le genre|el género|description
+une fille|una niña,niña,chica|description
+un garçon|un niño,niño,chico|description
+les cheveux|el pelo,pelo,cabello|description
+courts|corto,cortos|description
+longs|largo,largos|description
+bruns|moreno,morenos|description
+châtains|castaño,castaños|description
+blonds|rubio,rubios|description
+raides|liso,lisos|description
+ondulés|ondulado,ondulados|description
+frisés|rizado,rizados|description
+marron|marrones,marrón|description
+bleus|azules,azul|description
+verts|verdes,verde|description
+la taille|la talla,la estatura,altura|description
+grand / grande|alto,alta|description
+moyen / moyenne|mediano,mediana|description
+petit / petite|bajo,baja|description
+mince|delgado,delgada|description
+robuste|fuerte,robusto,robusta|description
+# --- caractère ---
+le caractère|el carácter|caractere
+drôle|divertido,divertida,gracioso,graciosa|caractere
+sympa|simpático,simpática|caractere
+sympathique|simpático,simpática|caractere
+antipathique|antipático,antipática|caractere
+calme|tranquilo,tranquila|caractere
+sérieux / sérieuse|serio,seria|caractere
+nerveux / nerveuse|nervioso,nerviosa|caractere
+timide|tímido,tímida|caractere
+gentil / gentille|amable|caractere
+heureux / heureuse|feliz|caractere
+malheureux / malheureuse|infeliz,desgraciado,desgraciada|caractere
+romantique|romántico,romántica|caractere
+gai / gaie|alegre|caractere
+triste|triste|caractere
+agréable|agradable|caractere
+sociable|sociable|caractere
+méchant / méchante|malo,mala,malvado,malvada|caractere
+# --- corps ---
+la tête|la cabeza|corps
+le visage|la cara|corps
+le front|la frente|corps
+l'œil|el ojo|corps
+les yeux|los ojos|corps
+l'oreille|la oreja|corps
+les oreilles|las orejas|corps
+le nez|la nariz|corps
+la bouche|la boca|corps
+la dent|el diente|corps
+les dents|los dientes|corps
+le corps|el cuerpo|corps
+le cou|el cuello|corps
+le dos|la espalda|corps
+le bras|el brazo,los brazos|corps
+la main|la mano|corps
+les mains|las manos|corps
+le doigt|el dedo|corps
+les doigts|los dedos|corps
+le coude|el codo|corps
+les coudes|los codos|corps
+le ventre|el vientre,la barriga,la tripa|corps
+la jambe|la pierna|corps
+les jambes|las piernas|corps
+le genou|la rodilla|corps
+les genoux|las rodillas|corps
+le pied|el pie|corps
+les pieds|los pies|corps
+# --- vêtements ---
+les vêtements|la ropa|vetements
+un pyjama|un pijama|vetements
+des chaussettes|unos calcetines,calcetines|vetements
+un pantalon|un pantalón|vetements
+un jean|un pantalón vaquero,unos vaqueros,vaqueros|vetements
+un legging|unos leggings,leggings,mallas|vetements
+un short|un pantalón corto|vetements
+un T-shirt|una camiseta|vetements
+une veste|una chaqueta|vetements
+un sweat|una sudadera|vetements
+un sweat à capuche|una sudadera con capucha|vetements
+un pull|un jersey|vetements
+un survêtement|un chándal|vetements
+des baskets|unas zapatillas de deporte,zapatillas de deporte,zapatillas,deportivas|vetements
+un anorak|un chaquetón,un anorak|vetements
+# --- accessoires ---
+les accessoires|los accesorios|accessoires
+des lunettes|unas gafas,gafas|accessoires
+une montre|un reloj|accessoires
+# --- verbes et structures ---
+porter|llevar,llevar puesto|verbes
+avoir|tener|verbes
+être|ser,estar|verbes
+avoir mal|tener dolor,doler|verbes
+Où as-tu mal ?|¿dónde te duele?|verbes
+Comment es-tu ?|¿cómo eres?|verbes

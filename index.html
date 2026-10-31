@@ -1,0 +1,1147 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>French Quest</title>
+<meta name="description" content="Juego para aprender vocabulario de francés (nivel A1)">
+<style>
+:root{
+  --bg:#eef3ff; --card:#ffffff; --ink:#1d2550; --muted:#5f6890; --line:#d9e2f7;
+  --brand:#2f5bea; --brand-ink:#ffffff; --brand-soft:#e2eaff;
+  --good:#1fa971; --good-soft:#dcf7ea; --bad:#e5484d; --bad-soft:#fde3e4;
+  --gold:#f5a623; --shadow:0 6px 20px rgba(80,50,160,.12);
+}
+@media (prefers-color-scheme: dark){
+  :root{--bg:#11152a;--card:#1c2240;--ink:#eef1ff;--muted:#a3abd0;--line:#2f3a66;
+    --brand:#7b9bff;--brand-ink:#0f1430;--brand-soft:#26326a;
+    --good:#3ed598;--good-soft:#173a2e;--bad:#ff6b70;--bad-soft:#4a1f27;--shadow:0 6px 20px rgba(0,0,0,.4)}
+}
+*{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%}
+body{margin:0;background:var(--bg);color:var(--ink);
+  font-family:ui-rounded,"Nunito","Segoe UI",system-ui,-apple-system,sans-serif;line-height:1.4}
+main{max-width:720px;margin:0 auto;padding:16px 16px 48px}
+h1{font-size:1.6rem;margin:0}
+h2{font-size:1.15rem;margin:0 0 10px}
+.top{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:14px;flex-wrap:wrap}
+.tabs{display:flex;gap:6px;flex-wrap:wrap}
+@media (max-width:420px){
+  h1{font-size:1.3rem}
+  .tab{padding:7px 10px;font-size:.85rem}
+}
+button{font:inherit;color:inherit;cursor:pointer}
+.tab{border:2px solid var(--line);background:var(--card);border-radius:999px;padding:8px 14px;font-weight:700}
+.tab[aria-selected="true"]{background:var(--brand);border-color:var(--brand);color:var(--brand-ink)}
+.card{background:var(--card);border-radius:20px;box-shadow:var(--shadow);padding:18px;margin-bottom:14px}
+.hidden{display:none!important}
+.level{display:flex;align-items:center;gap:14px}
+.level .emoji{font-size:2.8rem;line-height:1}
+.bar{height:12px;background:var(--brand-soft);border-radius:99px;overflow:hidden;margin-top:6px}
+.bar>i{display:block;height:100%;background:linear-gradient(90deg,var(--brand),#ef4060);border-radius:99px;transition:width .4s}
+.stats{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-top:12px}
+.stat{background:var(--brand-soft);border-radius:14px;padding:8px;text-align:center}
+.stat b{display:block;font-size:1.3rem}
+.stat span{font-size:.8rem;color:var(--muted)}
+.seg{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:12px}
+.opt{flex:1 1 130px;border:2px solid var(--line);background:var(--card);border-radius:14px;padding:10px 12px;font-weight:700;text-align:center}
+.opt small{display:block;font-weight:500;color:var(--muted)}
+.opt[aria-pressed="true"]{border-color:var(--brand);background:var(--brand-soft)}
+.letters{display:grid;grid-template-columns:repeat(auto-fill,minmax(46px,1fr));gap:6px;margin-bottom:12px}
+.letter{border:2px solid var(--line);background:var(--card);border-radius:12px;padding:8px 0;font-weight:800;font-size:1.05rem}
+.letter small{display:block;font-size:.65rem;font-weight:500;color:var(--muted)}
+.letter[aria-pressed="true"]{background:var(--brand);border-color:var(--brand);color:var(--brand-ink)}
+.letter[aria-pressed="true"] small{color:inherit}
+.letter:disabled{opacity:.35;cursor:not-allowed}
+.link{background:none;border:0;color:var(--brand);font-weight:700;padding:4px 6px;text-decoration:underline}
+.primary{width:100%;border:0;border-radius:16px;padding:16px;font-size:1.25rem;font-weight:800;
+  background:linear-gradient(135deg,var(--brand),#ef4060);color:#fff;box-shadow:var(--shadow)}
+.primary:disabled{opacity:.5;cursor:not-allowed}
+.secondary{border:2px solid var(--brand);background:transparent;color:var(--brand);border-radius:14px;padding:12px 16px;font-weight:800}
+.hint{color:var(--muted);font-size:.85rem}
+/* juego */
+.hud{display:flex;align-items:center;justify-content:space-between;gap:8px;margin-bottom:12px}
+.hearts{font-size:1.6rem;letter-spacing:2px}
+.hearts .lost{filter:grayscale(1);opacity:.3}
+.pill{background:var(--card);border-radius:999px;padding:6px 12px;font-weight:800;box-shadow:var(--shadow)}
+.question{text-align:center;padding:26px 16px}
+.dir{display:inline-block;background:var(--brand-soft);color:var(--brand);border-radius:99px;padding:4px 12px;font-weight:800;font-size:.85rem}
+.word{font-size:clamp(2rem,9vw,3.2rem);font-weight:900;margin:14px 0 6px;overflow-wrap:anywhere}
+.sentence{font-size:clamp(1.15rem,4.2vw,1.5rem);font-weight:700;margin:14px 0 6px;line-height:1.5}
+.sentence b{color:var(--brand)}
+.mascot{font-size:2.4rem;transition:transform .2s}
+.mascot.pop{transform:scale(1.35) rotate(-8deg)}
+.answer-row{display:flex;gap:8px;margin-top:8px}
+input[type=text]{flex:1;min-width:0;font:inherit;font-size:1.3rem;padding:14px;border-radius:14px;
+  border:3px solid var(--line);background:var(--card);color:var(--ink);text-align:center}
+input[type=text]:focus{outline:none;border-color:var(--brand)}
+input[type=text]:disabled{opacity:.7}
+.check{border:0;border-radius:14px;padding:0 20px;background:var(--brand);color:var(--brand-ink);font-weight:800;font-size:1.1rem}
+.actions{display:flex;gap:8px;justify-content:center;margin-top:10px;flex-wrap:wrap}
+.feedback{margin-top:14px;border-radius:16px;padding:14px;font-weight:700}
+.feedback.ok{background:var(--good-soft);color:var(--good)}
+.feedback.ko{background:var(--bad-soft);color:var(--bad)}
+.feedback .sol{display:block;font-size:1.3rem;color:var(--ink);margin-top:4px}
+.shake{animation:shake .35s}
+@keyframes shake{20%{transform:translateX(-8px)}40%{transform:translateX(8px)}60%{transform:translateX(-6px)}80%{transform:translateX(6px)}}
+.float{position:fixed;left:50%;top:38%;transform:translateX(-50%);font-size:2rem;font-weight:900;color:var(--good);
+  pointer-events:none;animation:up 1s forwards;text-shadow:0 2px 8px rgba(0,0,0,.2)}
+@keyframes up{to{transform:translate(-50%,-70px);opacity:0}}
+/* fin / historial */
+.big{font-size:3.2rem;font-weight:900;text-align:center;margin:0}
+.center{text-align:center}
+.missed{list-style:none;padding:0;margin:8px 0 0;display:grid;gap:6px}
+.missed li{background:var(--bad-soft);border-radius:12px;padding:8px 12px;display:flex;justify-content:space-between;gap:8px}
+.chart{display:flex;align-items:flex-end;gap:4px;height:150px;padding-top:8px}
+.col{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:flex-end;height:100%;min-width:0}
+.col i{display:block;width:100%;background:linear-gradient(180deg,#ef4060,var(--brand));border-radius:6px 6px 2px 2px;min-height:2px}
+.col span{font-size:.62rem;color:var(--muted);margin-top:4px}
+.col em{font-style:normal;font-size:.65rem;font-weight:800}
+table{width:100%;border-collapse:collapse;font-size:.95rem}
+th,td{padding:8px 6px;text-align:right;border-bottom:1px solid var(--line)}
+th:first-child,td:first-child{text-align:left}
+.badges{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:8px}
+.badge{border:2px dashed var(--line);border-radius:14px;padding:10px;text-align:center;opacity:.5}
+.badge.on{border:2px solid var(--gold);opacity:1;background:var(--brand-soft)}
+.badge b{display:block;font-size:1.8rem}
+.danger{background:none;border:0;color:var(--bad);text-decoration:underline;font-weight:700}
+.topic{display:block;width:100%;text-align:left;border:2px solid var(--line);background:var(--card);
+  border-radius:14px;padding:12px 14px;font-weight:700;margin-bottom:8px}
+.topic:hover{border-color:var(--brand)}
+#topicBody{line-height:1.6}
+#topicBody p{margin:0 0 10px}
+.wordlist{list-style:none;padding:0;margin:8px 0 0;display:grid;gap:6px}
+.wordlist li{background:var(--brand-soft);border-radius:12px;padding:10px 12px;display:flex;justify-content:space-between;align-items:center;gap:8px}
+.wordlist b{font-size:1.05rem}
+.wordlist span{flex:1;color:var(--muted);padding:0 8px}
+.wordlist button{background:none;border:0;font-size:1.2rem;cursor:pointer;flex-shrink:0;padding:2px 4px}
+.wordlist li.found{text-decoration:line-through;opacity:.5}
+.ws-grid{display:grid;gap:3px;margin:12px 0;touch-action:none;user-select:none;-webkit-user-select:none;-webkit-touch-callout:none}
+.ws-cell{aspect-ratio:1;display:flex;align-items:center;justify-content:center;background:var(--card);
+  border:1px solid var(--line);border-radius:4px;font-weight:800;color:var(--ink);
+  font-size:clamp(.65rem,3vw,1.05rem)}
+.ws-cell.sel{background:var(--brand-soft);border-color:var(--brand)}
+.ws-cell.found{background:var(--good-soft);color:var(--good);border-color:var(--good)}
+canvas#confetti{position:fixed;inset:0;width:100%;height:100%;pointer-events:none;z-index:10}
+:focus-visible{outline:3px solid var(--gold);outline-offset:2px}
+@media (prefers-reduced-motion: reduce){*{animation:none!important;transition:none!important}}
+</style>
+</head>
+<body>
+<main>
+  <div class="top">
+    <h1>🥐 French Quest</h1>
+    <div class="tabs" role="tablist">
+      <button class="tab" role="tab" id="tab-study" aria-selected="false">📖 Estudiar</button>
+      <button class="tab" role="tab" id="tab-exercises" aria-selected="true">🎮 Ejercicios</button>
+      <button class="tab" role="tab" id="tab-wordsearch" aria-selected="false">🔍 Sopa</button>
+      <button class="tab" role="tab" id="tab-hist" aria-selected="false">Historial</button>
+    </div>
+  </div>
+
+  <!-- INICIO -->
+  <section id="home">
+    <div class="card">
+      <div class="level">
+        <div class="emoji" id="lvEmoji">🥚</div>
+        <div style="flex:1">
+          <b id="lvName">Nivel</b>
+          <div class="hint" id="lvNext"></div>
+          <div class="hint" id="examInfo" style="font-weight:800;color:var(--brand)"></div>
+          <div class="bar"><i id="lvBar" style="width:0"></i></div>
+        </div>
+      </div>
+      <div class="stats">
+        <div class="stat"><b id="stToday">0</b><span>puntos hoy</span></div>
+        <div class="stat"><b id="stStreak">0</b><span>días seguidos 🔥</span></div>
+        <div class="stat"><b id="stBest">0</b><span>mejor partida</span></div>
+      </div>
+    </div>
+
+    <div class="card">
+      <h2>1. ¿Qué quieres practicar?</h2>
+      <div class="seg" id="categorySeg">
+        <button class="opt" data-category="vocab" aria-pressed="true">🔤 Vocabulario</button>
+        <button class="opt" data-category="grammar" aria-pressed="false">✏️ Gramática</button>
+      </div>
+
+      <div id="vocabConfig">
+        <div class="seg" id="modeSeg">
+          <button class="opt" data-mode="category" aria-pressed="true">🏷️ Por tema<small>los de tu cuaderno</small></button>
+          <button class="opt" data-mode="letters" aria-pressed="false">🔤 Por letra<small>fácil</small></button>
+          <button class="opt" data-mode="mixed" aria-pressed="false">🔀 Mezcladas<small>difícil</small></button>
+          <button class="opt" data-mode="review" aria-pressed="false">🔁 Repaso<small id="dueCount">0 palabras</small></button>
+        </div>
+        <div id="lettersBox">
+          <div class="letters" id="letters"></div>
+          <button class="link" id="allLetters">Todas las letras</button>
+          <button class="link" id="noLetters">Quitar todas</button>
+        </div>
+        <div id="categoriesBox" class="hidden">
+          <div class="seg" id="categories"></div>
+        </div>
+      </div>
+
+      <div id="grammarConfig" class="hidden">
+        <div class="seg" id="grammarSeg"></div>
+      </div>
+
+      <div class="hint" id="poolInfo"></div>
+    </div>
+
+    <div class="card" id="dirCard">
+      <h2>2. ¿En qué idioma te pregunto?</h2>
+      <div class="seg" id="dirSeg">
+        <button class="opt" data-dir="fr-es" aria-pressed="true">🇫🇷 → 🇪🇸<small>me dan francés</small></button>
+        <button class="opt" data-dir="es-fr" aria-pressed="false">🇪🇸 → 🇫🇷<small>me dan español</small></button>
+        <button class="opt" data-dir="mix" aria-pressed="false">🎲 Mezclado<small>de todo un poco</small></button>
+      </div>
+    </div>
+
+    <p class="hint center">Tienes 3 vidas ❤️. ¡Las rachas de aciertos dan puntos extra!</p>
+    <button class="primary" id="startBtn">¡Jugar! 🚀</button>
+    <p class="hint center"><label><input type="checkbox" id="optSpeak" checked> Leer las palabras en francés en voz alta</label>
+      &nbsp; <label><input type="checkbox" id="optSound" checked> Sonidos</label></p>
+  </section>
+
+  <!-- JUEGO -->
+  <section id="game" class="hidden">
+    <div class="hud">
+      <div class="pill hearts" id="hearts" aria-label="Vidas"></div>
+      <div class="pill">⭐ <span id="score">0</span></div>
+      <div class="pill" id="streakPill">🔥 <span id="streak">0</span></div>
+      <button class="link" id="quitBtn">Salir</button>
+    </div>
+    <div class="card question" id="qCard">
+      <span class="dir" id="dir"></span>
+      <div class="word" id="word"></div>
+      <p class="sentence hidden" id="sentence"></p>
+      <div class="mascot" id="mascot">🐓</div>
+      <form id="form" autocomplete="off">
+        <div class="answer-row">
+          <input type="text" id="input" aria-label="Tu respuesta" placeholder="Escribe la traducción…"
+            autocomplete="off" autocorrect="off" autocapitalize="none" spellcheck="false" enterkeyhint="done">
+          <button class="check" id="checkBtn" type="submit">✔</button>
+        </div>
+      </form>
+      <div class="actions" id="actions">
+        <button class="secondary" id="speakBtn" type="button">🔊 Escuchar</button>
+        <button class="secondary" id="hintBtn" type="button">💡 Pista (−5)</button>
+        <button class="secondary" id="skipBtn" type="button">🤷 No lo sé</button>
+      </div>
+      <div class="feedback hidden" id="feedback" role="status" aria-live="polite"></div>
+      <div class="actions"><button class="secondary hidden" id="reviewTheoryBtn" type="button">📖 Repasar teoría de este tema</button></div>
+      <div class="actions"><button class="primary hidden" id="nextBtn" type="button" style="max-width:320px">Siguiente ➜</button></div>
+    </div>
+    <p class="hint center" id="progress"></p>
+  </section>
+
+  <!-- FIN -->
+  <section id="end" class="hidden">
+    <div class="card">
+      <p class="big" id="endEmoji">🏁</p>
+      <h2 class="center" id="endTitle"></h2>
+      <p class="big" id="endScore"></p>
+      <p class="center hint" id="endInfo"></p>
+      <div id="endMissedBox" class="hidden">
+        <h2 id="endMissedTitle">Repasa esto</h2>
+        <ul class="missed" id="endMissed"></ul>
+        <p class="hint" id="endMissedHint"></p>
+      </div>
+    </div>
+    <button class="primary" id="againBtn">Jugar otra vez 🔁</button>
+    <p class="center"><button class="link" id="homeBtn">Cambiar opciones</button> ·
+      <button class="link" id="histBtn2">Ver historial</button></p>
+  </section>
+
+  <!-- HISTORIAL -->
+  <section id="history" class="hidden">
+    <div class="card">
+      <h2>Puntos de los últimos 14 días</h2>
+      <div class="chart" id="chart"></div>
+    </div>
+    <div class="card">
+      <h2>Logros</h2>
+      <div class="badges" id="badges"></div>
+    </div>
+    <div class="card">
+      <h2>Día a día</h2>
+      <div id="tableBox"></div>
+    </div>
+    <p class="center"><button class="danger" id="resetBtn">Borrar todo el historial</button></p>
+  </section>
+
+  <!-- ESTUDIAR -->
+  <section id="study" class="hidden">
+    <div class="card">
+      <div class="seg" id="studySeg">
+        <button class="opt" data-view="theory" aria-pressed="true">📖 Teoría</button>
+        <button class="opt" data-view="vocab" aria-pressed="false">📚 Vocabulario</button>
+      </div>
+    </div>
+
+    <div id="studyTheory">
+      <div class="card" id="studyList">
+        <h2>📖 Teoría por temas</h2>
+        <p class="hint" style="margin-top:-4px">Lo mismo que tienes en el cuaderno, explicado — repásalo antes de hacer los ejercicios de ese tema.</p>
+        <div id="topicsBox"></div>
+      </div>
+      <div class="card hidden" id="studyDetail">
+        <button class="link" id="studyBack">← Volver a los temas</button>
+        <h2 id="topicTitle"></h2>
+        <div id="topicBody"></div>
+      </div>
+    </div>
+
+    <div id="studyVocab" class="hidden">
+      <div class="card" id="vocabLettersBox">
+        <h2>📚 Vocabulario por tema</h2>
+        <p class="hint" style="margin-top:-4px">Elige un tema para repasar sus palabras antes de jugar. Pulsa 🔊 para oír cómo se pronuncian.</p>
+        <div class="seg" id="vocabLetters"></div>
+      </div>
+      <div class="card hidden" id="vocabWordsBox">
+        <button class="link" id="vocabWordsBack">← Volver a los temas</button>
+        <h2 id="vocabWordsTitle"></h2>
+        <ul class="wordlist" id="vocabWordsList"></ul>
+        <div class="actions">
+          <button class="secondary" id="vocabPrevBlock" type="button">← Bloque anterior</button>
+          <button class="secondary" id="vocabNextBlock" type="button">Siguiente bloque →</button>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- SOPA DE LETRAS -->
+  <section id="wordsearch" class="hidden">
+    <div class="card" id="wsConfig">
+      <h2>🔍 Sopa de letras</h2>
+      <p class="hint" style="margin-top:-4px">Elige de dónde salen las palabras — cada sopa es nueva y distinta.</p>
+      <div class="seg" id="wsModeSeg">
+        <button class="opt" data-mode="category" aria-pressed="true">🏷️ Por tema</button>
+        <button class="opt" data-mode="letters" aria-pressed="false">🔤 Por letra</button>
+      </div>
+      <div class="seg" id="wsDifficultySeg">
+        <button class="opt" data-diff="easy" aria-pressed="false">🙂 Fácil<small>5 palabras</small></button>
+        <button class="opt" data-diff="normal" aria-pressed="true">😐 Normal<small>8 palabras</small></button>
+        <button class="opt" data-diff="hard" aria-pressed="false">🤓 Difícil<small>12 palabras</small></button>
+      </div>
+      <div id="wsLettersBox">
+        <div class="letters" id="wsLetters"></div>
+      </div>
+      <div id="wsCategoriesBox" class="hidden">
+        <div class="seg" id="wsCategories"></div>
+      </div>
+      <p class="hint" id="wsPoolInfo"></p>
+      <button class="primary" id="wsStartBtn">¡Generar sopa! 🔍</button>
+    </div>
+    <div class="card hidden" id="wsPuzzleBox">
+      <div class="hud">
+        <div class="pill"><span id="wsFoundCount">0</span>/<span id="wsTotalCount">0</span></div>
+        <button class="link" id="wsNewBtn">🔁 Nueva</button>
+        <button class="link" id="wsBackBtn">⚙️ Opciones</button>
+      </div>
+      <p class="hint center" style="margin-top:0">Arrastra sobre las letras para formar la palabra en francés de cada pista (sin artículo ni acentos).</p>
+      <div id="wsGrid" class="ws-grid"></div>
+      <div class="hint" style="margin-top:10px">Pistas (en español):</div>
+      <ul class="wordlist" id="wsWordList"></ul>
+    </div>
+  </section>
+</main>
+<canvas id="confetti"></canvas>
+
+<script src="words.js"></script>
+<script src="topics.js"></script>
+<script src="grammar.js"></script>
+<script>
+"use strict";
+/* ====================== Utilidades ====================== */
+const $ = id => document.getElementById(id);
+const KEY = "frenchQuest.v1"; // nombre de la clave de localStorage, no un secreto — gitleaks:allow
+const LEVELS = [
+  [0, "🥚", "Huevito"], [100, "🐣", "Pollito"], [300, "🐥", "Explorador"], [700, "🐓", "Zorrito listo"],
+  [1500, "🦄", "Unicornio"], [3000, "🐉", "Dragón del francés"], [6000, "👑", "Reina de Francia"]
+];
+const MAX_LIVES = 3;
+// Sistema Leitner: caja 0-4, días hasta la próxima revisión por caja
+const BOX_INTERVALS = [0, 1, 3, 7, 16];
+
+const pad = n => String(n).padStart(2, "0");
+const dayKey = (d = new Date()) => `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}`; // fecha LOCAL
+
+// Normaliza para comparar: minúsculas, sin signos y (por defecto) sin acentos ni
+// artículo inicial. Gramática usa {articles:true} porque ahí "à la"/"au" ES la
+// respuesta; {accents:true} sirve para avisar de acentos olvidados (é, è, ê, à, ç).
+const ARTICLES = new Set(["el", "la", "los", "las", "un", "una", "unos", "unas", "le", "les", "l", "des"]);
+function norm(s, { accents = false, articles = false } = {}) {
+  let t = s.toLowerCase().replace(/œ/g, "oe").replace(/æ/g, "ae").replace(/-/g, "");
+  t = accents ? t.normalize("NFC") : t.normalize("NFD").replace(/[\u0300-\u036f]/g, "");
+  t = t.replace(/[^\p{L}\p{N} ]+/gu, " ").replace(/\s+/g, " ").trim();
+  const parts = t.split(" ");
+  if (!articles && parts.length > 1 && ARTICLES.has(parts[0])) t = parts.slice(1).join(" ");
+  return t;
+}
+// Palabra sin artículo pero con acentos, para pistas ("la tête" -> "tête")
+const bare = s => s.replace(/^(le|la|les|un|une|des|el|los|las|una|unos|unas)\s+|^l['’]/i, "");
+const shuffle = a => { for (let i = a.length - 1; i > 0; i--) { const j = Math.random() * (i + 1) | 0; [a[i], a[j]] = [a[j], a[i]]; } return a; };
+const letterOf = w => norm(w.fr[0])[0].toUpperCase();
+
+/* ====================== Almacenamiento ====================== */
+function load() {
+  const base = { days: {}, leitner: {}, total: 0, best: 0, correct: 0, opts: { speak: true, sound: true } };
+  try {
+    const raw = localStorage.getItem(KEY);
+    if (raw) {
+      const saved = JSON.parse(raw);
+      const db = Object.assign(base, saved);
+      if (saved.missed && !saved.leitner) {
+        // migración desde el contador plano de fallos al sistema Leitner:
+        // las palabras que fallaban antes entran hoy mismo en caja 0
+        const today = dayKey();
+        db.leitner = {};
+        Object.keys(saved.missed).forEach(k => { db.leitner[k] = { box: 0, due: today }; });
+        delete db.missed;
+        try { localStorage.setItem(KEY, JSON.stringify(db)); } catch (e) {} // persistir la migración ya, no esperar al próximo save()
+        return db;
+      }
+      delete db.missed;
+      return db;
+    }
+  } catch (e) { /* almacenamiento bloqueado: seguimos sin guardar */ }
+  return base;
+}
+let db = load();
+function save() { try { localStorage.setItem(KEY, JSON.stringify(db)); } catch (e) {} }
+function today() { return db.days[dayKey()] || { points: 0, games: 0, correct: 0, wrong: 0, best: 0 }; }
+
+function streakDays() {
+  let n = 0; const d = new Date();
+  if (!db.days[dayKey(d)]) d.setDate(d.getDate() - 1); // hoy aún sin jugar no rompe la racha
+  while (db.days[dayKey(d)]) { n++; d.setDate(d.getDate() - 1); }
+  return n;
+}
+
+/* ====================== Sonido, voz y confeti ====================== */
+let actx;
+function beep(freqs, dur = 0.12) {
+  if (!db.opts.sound) return;
+  try {
+    actx = actx || new (window.AudioContext || window.webkitAudioContext)();
+    freqs.forEach((f, i) => {
+      const o = actx.createOscillator(), g = actx.createGain(), t = actx.currentTime + i * dur;
+      o.frequency.value = f; o.type = "triangle"; g.gain.setValueAtTime(0.15, t);
+      g.gain.exponentialRampToValueAtTime(0.001, t + dur); o.connect(g); g.connect(actx.destination);
+      o.start(t); o.stop(t + dur);
+    });
+  } catch (e) {}
+}
+const sndOk = () => beep([660, 880]), sndKo = () => beep([220, 165], 0.18), sndWin = () => beep([523, 659, 784, 1047], 0.15);
+function say(text) {
+  if (!("speechSynthesis" in window)) return;
+  speechSynthesis.cancel();
+  const u = new SpeechSynthesisUtterance(text); u.lang = "fr-FR"; u.rate = 0.9; speechSynthesis.speak(u);
+}
+function confetti() {
+  const c = $("confetti"), x = c.getContext("2d");
+  c.width = innerWidth; c.height = innerHeight;
+  const cols = ["#2f5bea", "#ef4060", "#f5a623", "#1fa971", "#39a0ff"];
+  const ps = Array.from({ length: 140 }, () => ({ x: Math.random() * c.width, y: -20 - Math.random() * c.height / 2,
+    r: 4 + Math.random() * 6, vy: 2 + Math.random() * 4, vx: -2 + Math.random() * 4, col: cols[Math.random() * 5 | 0], a: Math.random() * 6 }));
+  let frames = 0;
+  (function tick() {
+    x.clearRect(0, 0, c.width, c.height);
+    ps.forEach(p => { p.x += p.vx; p.y += p.vy; p.a += .1; x.fillStyle = p.col; x.fillRect(p.x, p.y, p.r, p.r * Math.abs(Math.cos(p.a)) + 2); });
+    if (++frames < 220) requestAnimationFrame(tick); else x.clearRect(0, 0, c.width, c.height);
+  })();
+}
+
+/* ====================== Pantalla de inicio ====================== */
+const cfg = { category: "vocab", mode: "category", dir: "fr-es", letters: new Set(["A"]), categories: new Set(), topic: Object.keys(GRAMMAR)[0] };
+const LETTERS = [...new Set(WORDS.map(letterOf))].sort();
+const CATEGORIES = [...new Set(WORDS.filter(w => w.cat).map(w => w.cat))].sort();
+cfg.categories = new Set(CATEGORIES);
+const CATEGORY_META = {
+  description: { emoji: "🪞", label: "Descripción" },
+  caractere: { emoji: "😊", label: "Carácter" },
+  corps: { emoji: "🦵", label: "Cuerpo" },
+  vetements: { emoji: "👕", label: "Ropa" },
+  accessoires: { emoji: "👓", label: "Accesorios" },
+  verbes: { emoji: "🔧", label: "Verbos y frases" },
+};
+// Fecha del examen (jueves). Cambiar aquí para el siguiente.
+const EXAM_DATE = "2026-11-05";
+
+function buildCategories() {
+  const box = $("categories"); box.textContent = "";
+  CATEGORIES.forEach(c => {
+    const n = WORDS.filter(w => w.cat === c).length;
+    const meta = CATEGORY_META[c] || { emoji: "🏷️", label: c };
+    const b = document.createElement("button");
+    b.className = "opt"; b.type = "button"; b.dataset.cat = c;
+    b.setAttribute("aria-pressed", cfg.categories.has(c));
+    b.innerHTML = `${meta.emoji} ${meta.label}<small>${n}</small>`;
+    b.onclick = () => { cfg.categories.has(c) ? cfg.categories.delete(c) : cfg.categories.add(c); refreshHome(); };
+    box.append(b);
+  });
+}
+
+function buildGrammarTopics() {
+  const box = $("grammarSeg"); box.textContent = "";
+  Object.entries(GRAMMAR).forEach(([key, g]) => {
+    const b = document.createElement("button");
+    b.className = "opt"; b.type = "button"; b.dataset.topic = key;
+    b.setAttribute("aria-pressed", cfg.topic === key);
+    b.innerHTML = `${g.emoji || "✏️"} ${g.title}<small>${g.items.length} frases</small>`;
+    b.onclick = () => { cfg.topic = key; refreshHome(); };
+    box.append(b);
+  });
+}
+
+function buildLetters() {
+  const box = $("letters"); box.textContent = "";
+  LETTERS.forEach(L => {
+    const n = WORDS.filter(w => letterOf(w) === L).length;
+    const b = document.createElement("button");
+    b.className = "letter"; b.type = "button"; b.dataset.l = L;
+    b.setAttribute("aria-pressed", cfg.letters.has(L));
+    b.append(L); const s = document.createElement("small"); s.textContent = n; b.append(s);
+    b.onclick = () => { cfg.letters.has(L) ? cfg.letters.delete(L) : cfg.letters.add(L); refreshHome(); };
+    box.append(b);
+  });
+}
+function dueWords() {
+  const t = dayKey();
+  return WORDS.filter(w => { const r = db.leitner[w.fr[0]]; return r && r.due <= t; });
+}
+// Actualiza la caja Leitner de una palabra tras responder.
+// ok=false -> vuelve a caja 0. ok=true con pista -> se queda en su caja (no cuenta como recuerdo real).
+// ok=true sin pista -> sube de caja (máx. la última) y se aleja la próxima revisión.
+function leitnerReview(enKey, ok, hinted) {
+  const cur = db.leitner[enKey] || { box: 0 };
+  const box = !ok ? 0 : (hinted ? cur.box : Math.min(cur.box + 1, BOX_INTERVALS.length - 1));
+  const due = new Date(); due.setDate(due.getDate() + BOX_INTERVALS[box]);
+  db.leitner[enKey] = { box, due: dayKey(due) };
+}
+function pool() {
+  if (cfg.category === "grammar") return (GRAMMAR[cfg.topic] || {}).items || [];
+  if (cfg.mode === "mixed") return WORDS;
+  if (cfg.mode === "review") return dueWords();
+  if (cfg.mode === "category") return WORDS.filter(w => w.cat && cfg.categories.has(w.cat));
+  return WORDS.filter(w => cfg.letters.has(letterOf(w)));
+}
+function refreshHome() {
+  const t = today(), lvIdx = LEVELS.reduce((a, l, i) => db.total >= l[0] ? i : a, 0), lv = LEVELS[lvIdx], nx = LEVELS[lvIdx + 1];
+  $("lvEmoji").textContent = lv[1]; $("lvName").textContent = `Nivel ${lvIdx + 1}: ${lv[2]}`;
+  $("lvNext").textContent = nx ? `${db.total} pts · faltan ${nx[0] - db.total} para ${nx[1]} ${nx[2]}` : `${db.total} pts · ¡nivel máximo!`;
+  $("lvBar").style.width = (nx ? (db.total - lv[0]) / (nx[0] - lv[0]) * 100 : 100) + "%";
+  $("stToday").textContent = t.points; $("stStreak").textContent = streakDays(); $("stBest").textContent = db.best;
+  $("dueCount").textContent = `${dueWords().length} palabras`;
+  const [ey, em, ed] = EXAM_DATE.split("-").map(Number), now = new Date();
+  const left = Math.round((new Date(ey, em - 1, ed) - new Date(now.getFullYear(), now.getMonth(), now.getDate())) / 864e5);
+  $("examInfo").textContent = left > 1 ? `📅 Examen de francés en ${left} días — ¡a por él!` : left === 1 ? "📅 ¡El examen es mañana! Un repaso rápido y a dormir 😴"
+    : left === 0 ? "🍀 ¡Hoy es el examen! Bonne chance !" : "";
+  document.querySelectorAll("#categorySeg .opt").forEach(b => b.setAttribute("aria-pressed", b.dataset.category === cfg.category));
+  document.querySelectorAll("#modeSeg .opt").forEach(b => b.setAttribute("aria-pressed", b.dataset.mode === cfg.mode));
+  document.querySelectorAll("#dirSeg .opt").forEach(b => b.setAttribute("aria-pressed", b.dataset.dir === cfg.dir));
+  document.querySelectorAll("#letters .letter").forEach(b => b.setAttribute("aria-pressed", cfg.letters.has(b.dataset.l)));
+  document.querySelectorAll("#categories .opt").forEach(b => b.setAttribute("aria-pressed", cfg.categories.has(b.dataset.cat)));
+  document.querySelectorAll("#grammarSeg .opt").forEach(b => b.setAttribute("aria-pressed", b.dataset.topic === cfg.topic));
+  $("vocabConfig").classList.toggle("hidden", cfg.category !== "vocab");
+  $("grammarConfig").classList.toggle("hidden", cfg.category !== "grammar");
+  $("dirCard").classList.toggle("hidden", cfg.category === "grammar");
+  $("lettersBox").classList.toggle("hidden", cfg.category !== "vocab" || cfg.mode !== "letters");
+  $("categoriesBox").classList.toggle("hidden", cfg.category !== "vocab" || cfg.mode !== "category");
+  const n = pool().length;
+  if (cfg.category === "grammar") {
+    $("poolInfo").textContent = `${n} frases para practicar`;
+  } else {
+    $("poolInfo").textContent = cfg.mode === "review" && !n ? "No tienes palabras pendientes de repaso hoy. ¡Vuelve mañana o sigue practicando otras!" : `${n} palabras para practicar`;
+  }
+  $("startBtn").disabled = n < 1;
+  $("optSpeak").checked = db.opts.speak; $("optSound").checked = db.opts.sound;
+}
+document.querySelectorAll("#categorySeg .opt").forEach(b => b.onclick = () => { cfg.category = b.dataset.category; refreshHome(); });
+document.querySelectorAll("#modeSeg .opt").forEach(b => b.onclick = () => { cfg.mode = b.dataset.mode; refreshHome(); });
+document.querySelectorAll("#dirSeg .opt").forEach(b => b.onclick = () => { cfg.dir = b.dataset.dir; refreshHome(); });
+$("allLetters").onclick = () => { LETTERS.forEach(l => cfg.letters.add(l)); refreshHome(); };
+$("noLetters").onclick = () => { cfg.letters.clear(); refreshHome(); };
+$("optSpeak").onchange = e => { db.opts.speak = e.target.checked; save(); };
+$("optSound").onchange = e => { db.opts.sound = e.target.checked; save(); };
+
+/* ====================== Navegación ====================== */
+function show(id) {
+  ["home", "game", "end", "history", "study", "wordsearch"].forEach(s => $(s).classList.toggle("hidden", s !== id));
+  const tab = id === "history" ? "hist" : id === "study" ? "study" : id === "wordsearch" ? "wordsearch" : "exercises";
+  $("tab-exercises").setAttribute("aria-selected", tab === "exercises");
+  $("tab-study").setAttribute("aria-selected", tab === "study");
+  $("tab-wordsearch").setAttribute("aria-selected", tab === "wordsearch");
+  $("tab-hist").setAttribute("aria-selected", tab === "hist");
+  window.scrollTo(0, 0);
+}
+$("tab-exercises").onclick = () => { if (G.active && !confirm("¿Salir de la partida?")) return; G.active = false; refreshHome(); show("home"); };
+$("tab-study").onclick = () => { if (G.active && !confirm("¿Salir de la partida?")) return; G.active = false; renderStudy(); show("study"); };
+$("tab-wordsearch").onclick = () => { if (G.active && !confirm("¿Salir de la partida?")) return; G.active = false; wsShowConfig(); show("wordsearch"); };
+$("tab-hist").onclick = () => { if (G.active && !confirm("¿Salir de la partida?")) return; G.active = false; renderHistory(); show("history"); };
+$("homeBtn").onclick = () => { refreshHome(); show("home"); };
+$("histBtn2").onclick = () => { renderHistory(); show("history"); };
+$("quitBtn").onclick = () => { if (confirm("¿Terminar la partida? Se guardarán tus puntos.")) finish(true); };
+
+/* ====================== Juego ====================== */
+const G = { active: false };
+
+function startGame() {
+  const words = shuffle(pool().slice());
+  Object.assign(G, { active: true, kind: cfg.category, queue: words, i: 0, lives: MAX_LIVES, score: 0, streak: 0, right: 0, wrong: 0,
+    wrongStreak: 0, missedList: [], askedEs: new Set(), answered: false, hinted: false, cur: null });
+  show("game"); nextQuestion();
+}
+$("startBtn").onclick = startGame;
+$("againBtn").onclick = startGame;
+
+function renderHearts() {
+  const h = $("hearts"); h.textContent = "";
+  for (let i = 0; i < MAX_LIVES; i++) { const s = document.createElement("span"); s.textContent = "❤️"; if (i >= G.lives) s.className = "lost"; h.append(s); }
+}
+function setMascot(e) { const m = $("mascot"); m.textContent = e; m.classList.add("pop"); setTimeout(() => m.classList.remove("pop"), 250); }
+
+function nextQuestion() {
+  $("reviewTheoryBtn").classList.add("hidden");
+  if (G.kind === "grammar") return nextGrammarQuestion();
+  // busca la siguiente palabra evitando repetir el mismo enunciado en español
+  let q = null, dir;
+  while (G.i < G.queue.length) {
+    const w = G.queue[G.i++];
+    dir = cfg.dir === "mix" ? (Math.random() < 0.5 ? "fr-es" : "es-fr") : cfg.dir;
+    if (dir === "es-fr" && G.askedEs.has(w.es[0])) continue;
+    q = w; break;
+  }
+  if (!q) return finish(false);
+  if (dir === "es-fr") G.askedEs.add(q.es[0]);
+  G.cur = { w: q, dir }; G.answered = false; G.hinted = false;
+  $("dir").textContent = dir === "fr-es" ? "🇫🇷 Francés → Español 🇪🇸" : "🇪🇸 Español → Francés 🇫🇷";
+  $("word").textContent = dir === "fr-es" ? q.fr.join(" / ") : q.es[0];
+  $("word").classList.remove("hidden"); $("sentence").classList.add("hidden");
+  $("input").value = ""; $("input").disabled = false; $("input").placeholder = dir === "fr-es" ? "Escribe en español…" : "Escribe en francés…";
+  $("checkBtn").disabled = false; $("hintBtn").disabled = false; $("skipBtn").disabled = false;
+  $("speakBtn").classList.toggle("hidden", dir !== "fr-es");
+  $("feedback").classList.add("hidden"); $("nextBtn").classList.add("hidden"); $("actions").classList.remove("hidden");
+  $("streak").textContent = G.streak; $("score").textContent = G.score; renderHearts();
+  $("progress").textContent = `Palabra ${G.i} de ${G.queue.length}`;
+  setMascot("🐓");
+  if (dir === "fr-es" && db.opts.speak) say(q.fr.join(", "));
+  $("input").focus();
+}
+
+function nextGrammarQuestion() {
+  if (G.i >= G.queue.length) return finish(false);
+  const item = G.queue[G.i++];
+  G.cur = { item }; G.answered = false; G.hinted = false;
+  $("dir").textContent = "✏️ " + GRAMMAR[cfg.topic].title;
+  $("word").classList.add("hidden"); $("sentence").classList.remove("hidden");
+  $("sentence").innerHTML = item.text.replace("___", "<b>___</b>");
+  $("input").value = ""; $("input").disabled = false; $("input").placeholder = "Escribe la palabra que falta…";
+  $("checkBtn").disabled = false; $("hintBtn").disabled = false; $("skipBtn").disabled = false;
+  $("speakBtn").classList.add("hidden");
+  $("feedback").classList.add("hidden"); $("nextBtn").classList.add("hidden"); $("actions").classList.remove("hidden");
+  $("streak").textContent = G.streak; $("score").textContent = G.score; renderHearts();
+  $("progress").textContent = `Frase ${G.i} de ${G.queue.length}`;
+  setMascot("🐓");
+  $("input").focus();
+}
+
+// Respuestas válidas para la pregunta actual
+function accepted() {
+  if (G.kind === "grammar") return G.cur.item.answers;
+  const { w, dir } = G.cur;
+  if (dir === "fr-es") return w.es;
+  // ES→FR: cualquier palabra francesa que comparta ese español (p. ej. sympa/sympathique)
+  const shown = w.es[0], out = new Set(w.fr);
+  WORDS.forEach(o => { if (o.es.includes(shown)) o.fr.forEach(e => out.add(e)); });
+  return [...out];
+}
+// Compara la respuesta: devuelve {ok, accentSlip}. accentSlip = correcta pero
+// con algún acento mal (solo se avisa cuando la respuesta es en francés).
+function judge(raw) {
+  const opts = { articles: G.kind === "grammar" };
+  const acc = accepted();
+  const ok = acc.some(a => norm(a, opts) === norm(raw, opts));
+  const french = G.kind === "grammar" || G.cur.dir === "es-fr";
+  const strict = { ...opts, accents: true };
+  const accentSlip = ok && french && !acc.some(a => norm(a, strict) === norm(raw, strict));
+  return { ok, accentSlip };
+}
+function solutionText() {
+  if (G.kind === "grammar") return G.cur.item.answers.join(" / ");
+  const { w, dir } = G.cur;
+  return dir === "fr-es" ? w.es.slice(0, 3).join(" / ") : w.fr.join(" / ");
+}
+// Lo que se muestra en la lista de "para repasar" de la pantalla de fin
+function questionDisplay() {
+  if (G.kind === "grammar") {
+    const it = G.cur.item;
+    return { title: it.text.replace("___", it.answers[0]), sub: "" };
+  }
+  const { w } = G.cur;
+  return { title: w.fr.join(" / "), sub: w.es.slice(0, 2).join(" / ") };
+}
+
+function answer(action) { // action: "check" | "skip"
+  if (!G.active || G.answered) return;
+  const raw = $("input").value;
+  if (action === "check" && !norm(raw, { articles: true })) { $("input").focus(); return; }
+  G.answered = true;
+  const { ok: judged, accentSlip } = judge(raw);
+  const ok = action === "check" && judged;
+  const fb = $("feedback"); fb.classList.remove("hidden", "ok", "ko");
+  $("input").disabled = true; $("checkBtn").disabled = true; $("hintBtn").disabled = true; $("skipBtn").disabled = true;
+  fb.textContent = "";
+  const sol = document.createElement("span"); sol.className = "sol"; sol.textContent = solutionText();
+  const leitKey = G.kind === "grammar" ? `gr:${cfg.topic}:${G.cur.item.id}` : G.cur.w.fr[0];
+
+  if (ok) {
+    G.streak++; G.right++; G.wrongStreak = 0;
+    const base = G.kind === "grammar" ? 10 : (G.cur.dir === "es-fr" ? 15 : 10);
+    const pts = Math.max(1, base + Math.min(Math.floor(G.streak / 3) * 2, 10) - (G.hinted ? 5 : 0));
+    G.score += pts; leitnerReview(leitKey, true, G.hinted);
+    fb.classList.add("ok"); fb.append(`✅ ¡Correcto! +${pts}${G.streak >= 3 ? ` (racha ×${G.streak} 🔥)` : ""}${accentSlip ? " — ⚠️ ¡ojo con los acentos! Se escribe:" : ""}`, sol);
+    setMascot(G.streak >= 3 ? "🤩" : "😄"); sndOk(); floatText(`+${pts}`);
+    if (G.kind === "vocab" && G.cur.dir === "es-fr" && db.opts.speak) say(G.cur.w.fr.join(", "));
+  } else {
+    G.streak = 0; G.wrong++; G.lives--; G.wrongStreak++;
+    leitnerReview(leitKey, false, G.hinted);
+    const disp = questionDisplay();
+    if (!G.missedList.some(m => m.title === disp.title)) G.missedList.push(disp);
+    fb.classList.add("ko"); fb.append(action === "skip" ? "Esta era:" : "❌ Casi… la respuesta era:", sol);
+    setMascot("😿"); sndKo(); $("qCard").classList.remove("shake"); void $("qCard").offsetWidth; $("qCard").classList.add("shake");
+    if (G.kind === "vocab" && db.opts.speak) say(G.cur.w.fr.join(", "));
+  }
+  $("score").textContent = G.score; $("streak").textContent = G.streak; renderHearts();
+  $("actions").classList.add("hidden");
+  const canReview = G.kind === "grammar" && G.wrongStreak >= 2 && TOPICS.some(t => t.id === GRAMMAR[cfg.topic].topicId);
+  $("reviewTheoryBtn").classList.toggle("hidden", !canReview);
+  const nb = $("nextBtn"); nb.classList.remove("hidden");
+  nb.textContent = G.lives <= 0 ? "Ver resultado 🏁" : "Siguiente ➜"; nb.focus();
+}
+function floatText(t) {
+  const f = document.createElement("div"); f.className = "float"; f.textContent = t; document.body.append(f);
+  setTimeout(() => f.remove(), 1000);
+}
+
+$("form").onsubmit = e => { e.preventDefault(); answer("check"); };
+$("skipBtn").onclick = () => answer("skip");
+$("speakBtn").onclick = () => { say(G.cur.w.fr.join(", ")); $("input").focus(); };
+$("hintBtn").onclick = () => {
+  if (G.answered) return;
+  const sol = bare(G.kind === "grammar" ? G.cur.item.answers[0] : (G.cur.dir === "fr-es" ? G.cur.w.es[0] : G.cur.w.fr[0]));
+  G.hinted = true; $("input").placeholder = `Empieza por «${sol[0]}» y tiene ${sol.length} letras`; $("input").focus();
+};
+$("nextBtn").onclick = () => { if (G.lives <= 0) finish(false); else nextQuestion(); };
+// Enter en la pantalla de feedback pasa a la siguiente pregunta
+document.addEventListener("keydown", e => {
+  if (e.key === "Enter" && G.active && G.answered && !$("game").classList.contains("hidden") && document.activeElement !== $("nextBtn")) {
+    e.preventDefault(); $("nextBtn").click();
+  }
+});
+
+// Guarda el resultado de la partida en curso (puntos, historial del día) sin
+// mostrar la pantalla de fin — lo usan tanto finish() como reviewTheory().
+function saveGameResult() {
+  const k = dayKey(), d = today(), before = db.best;
+  const played = G.right + G.wrong > 0;
+  if (played) {
+    d.points += G.score; d.games++; d.correct += G.right; d.wrong += G.wrong; d.best = Math.max(d.best, G.score);
+    db.days[k] = d; db.total += G.score; db.correct += G.right;
+  }
+  const record = played && G.score > before && G.score > 0;
+  if (record) db.best = G.score;
+  save();
+  return { d, record };
+}
+
+function finish(quit) {
+  G.active = false;
+  const { d, record } = saveGameResult();
+  const cleared = !quit && G.lives > 0; // se acabaron las palabras sin perder las 3 vidas
+  $("endEmoji").textContent = cleared ? "🏆" : record ? "🎉" : G.right >= 10 ? "😎" : "💪";
+  $("endTitle").textContent = cleared ? "¡Te las sabes todas!" : record ? "¡Nuevo récord!" : quit ? "Partida terminada" : "¡Buen intento!";
+  $("endScore").textContent = `${G.score} pts`;
+  $("endInfo").textContent = `${G.right} aciertos · ${G.wrong} fallos · hoy llevas ${d.points} puntos`;
+  const list = $("endMissed"); list.textContent = "";
+  G.missedList.forEach(m => {
+    const li = document.createElement("li"), a = document.createElement("b"), b = document.createElement("span");
+    a.textContent = m.title; b.textContent = m.sub; li.append(a, b); list.append(li);
+  });
+  $("endMissedTitle").textContent = G.kind === "grammar" ? "Repasa estas frases" : "Repasa estas palabras";
+  $("endMissedHint").textContent = G.kind === "grammar"
+    ? "Vuelve a practicar este tema en «Gramática» cuando quieras."
+    : "Se han guardado en «Repaso» para que las practiques luego.";
+  $("endMissedBox").classList.toggle("hidden", !G.missedList.length);
+  show("end");
+  if (record || cleared) { sndWin(); confetti(); }
+}
+
+// Botón contextual tras 2 fallos seguidos en gramática: guarda la partida
+// (como al salir) y va directo a la teoría del tema, sin pasar por "fin".
+function reviewTheory() {
+  G.active = false;
+  saveGameResult();
+  const topic = TOPICS.find(t => t.id === GRAMMAR[cfg.topic].topicId);
+  renderStudy(); // deja la sección Estudiar en su estado normal (pestaña Teoría, lista de temas)
+  show("study");
+  if (topic) openTopic(topic);
+}
+$("reviewTheoryBtn").onclick = reviewTheory;
+
+/* ====================== Historial ====================== */
+function renderHistory() {
+  // gráfico de 14 días
+  const chart = $("chart"); chart.textContent = "";
+  const days = []; const d = new Date(); d.setDate(d.getDate() - 13);
+  for (let i = 0; i < 14; i++) { days.push(new Date(d)); d.setDate(d.getDate() + 1); }
+  const max = Math.max(10, ...days.map(x => (db.days[dayKey(x)] || {}).points || 0));
+  days.forEach(x => {
+    const p = (db.days[dayKey(x)] || {}).points || 0;
+    const col = document.createElement("div"); col.className = "col";
+    const em = document.createElement("em"); em.textContent = p || "";
+    const bar = document.createElement("i"); bar.style.height = (p / max * 100 * 0.78) + "%"; if (!p) bar.style.opacity = .25;
+    const lab = document.createElement("span"); lab.textContent = `${x.getDate()}/${x.getMonth() + 1}`;
+    col.append(em, bar, lab); chart.append(col);
+  });
+
+  // logros
+  const keys = Object.keys(db.days), st = streakDays(), bestStreakEver = maxStreak();
+  const B = [
+    ["🌱", "Primer día", keys.length >= 1], ["🔥", "3 días seguidos", bestStreakEver >= 3], ["🌈", "7 días seguidos", bestStreakEver >= 7],
+    ["💯", "100 aciertos", db.correct >= 100], ["🧠", "500 aciertos", db.correct >= 500], ["🏅", "Partida de 100 pts", db.best >= 100],
+    ["🚀", "Partida de 250 pts", db.best >= 250], ["🦄", "1.500 puntos", db.total >= 1500]
+  ];
+  const bx = $("badges"); bx.textContent = "";
+  B.forEach(([e, t, on]) => { const el = document.createElement("div"); el.className = "badge" + (on ? " on" : "");
+    const b = document.createElement("b"); b.textContent = on ? e : "🔒"; el.append(b, t); bx.append(el); });
+
+  // tabla
+  const box = $("tableBox"); box.textContent = "";
+  if (!keys.length) { const p = document.createElement("p"); p.className = "hint"; p.textContent = "Todavía no hay partidas. ¡Juega la primera!"; box.append(p); return; }
+  const t = document.createElement("table");
+  t.innerHTML = "<thead><tr><th>Día</th><th>Partidas</th><th>✔</th><th>✘</th><th>Puntos</th></tr></thead>";
+  const tb = document.createElement("tbody");
+  keys.sort().reverse().forEach(k => {
+    const r = db.days[k], tr = document.createElement("tr");
+    const [y, m, dd] = k.split("-"); const dl = new Date(+y, +m - 1, +dd).toLocaleDateString("es-ES", { weekday: "short", day: "numeric", month: "short" });
+    [dl, r.games, r.correct, r.wrong, r.points].forEach(v => { const td = document.createElement("td"); td.textContent = v; tr.append(td); });
+    tb.append(tr);
+  });
+  t.append(tb); box.append(t);
+}
+function maxStreak() {
+  const ks = Object.keys(db.days).sort(); let best = 0, cur = 0, prev = null;
+  ks.forEach(k => {
+    const [y, m, d] = k.split("-").map(Number), dt = new Date(y, m - 1, d);
+    cur = prev && Math.round((dt - prev) / 864e5) === 1 ? cur + 1 : 1; best = Math.max(best, cur); prev = dt;
+  });
+  return best;
+}
+$("resetBtn").onclick = () => {
+  if (confirm("¿Seguro que quieres borrar TODO el historial y los puntos? No se puede deshacer.")) {
+    db = { days: {}, leitner: {}, total: 0, best: 0, correct: 0, opts: db.opts };
+    save(); renderHistory();
+  }
+};
+
+/* ====================== Estudiar ====================== */
+function renderStudy() {
+  document.querySelectorAll("#studySeg .opt").forEach(b => b.setAttribute("aria-pressed", b.dataset.view === "theory"));
+  $("studyTheory").classList.remove("hidden");
+  $("studyVocab").classList.add("hidden");
+  $("studyDetail").classList.add("hidden");
+  $("studyList").classList.remove("hidden");
+  const box = $("topicsBox"); box.textContent = "";
+  if (!TOPICS.length) {
+    const p = document.createElement("p"); p.className = "hint";
+    p.textContent = "Todavía no hay temas de teoría — ¡muy pronto empezamos con gramática!";
+    box.append(p); return;
+  }
+  TOPICS.forEach(t => {
+    const b = document.createElement("button");
+    b.className = "topic"; b.type = "button";
+    b.textContent = `${t.emoji || "📘"} ${t.title}`;
+    b.onclick = () => openTopic(t);
+    box.append(b);
+  });
+}
+function openTopic(t) {
+  $("studyList").classList.add("hidden");
+  $("studyDetail").classList.remove("hidden");
+  $("topicTitle").textContent = `${t.emoji || "📘"} ${t.title}`;
+  $("topicBody").innerHTML = t.html || "";
+  window.scrollTo(0, 0);
+}
+$("studyBack").onclick = renderStudy;
+document.querySelectorAll("#studySeg .opt").forEach(b => b.onclick = () => {
+  document.querySelectorAll("#studySeg .opt").forEach(x => x.setAttribute("aria-pressed", x === b));
+  $("studyTheory").classList.toggle("hidden", b.dataset.view !== "theory");
+  $("studyVocab").classList.toggle("hidden", b.dataset.view !== "vocab");
+  if (b.dataset.view === "vocab") renderVocabLetters();
+});
+
+// Vocabulario para repasar (solo lectura, sin puntos): tema -> lista de palabras
+function renderVocabLetters() {
+  $("vocabWordsBox").classList.add("hidden");
+  $("vocabLettersBox").classList.remove("hidden");
+  const box = $("vocabLetters"); box.textContent = "";
+  CATEGORIES.forEach(c => {
+    const meta = CATEGORY_META[c] || { emoji: "🏷️", label: c };
+    const b = document.createElement("button");
+    b.className = "opt"; b.type = "button";
+    b.innerHTML = `${meta.emoji} ${meta.label}<small>${WORDS.filter(w => w.cat === c).length} palabras</small>`;
+    b.onclick = () => renderVocabWords(c);
+    box.append(b);
+  });
+}
+function renderVocabWords(c) {
+  $("vocabLettersBox").classList.add("hidden");
+  $("vocabWordsBox").classList.remove("hidden");
+  const meta = CATEGORY_META[c] || { emoji: "🏷️", label: c };
+  $("vocabWordsTitle").textContent = `${meta.emoji} ${meta.label}`;
+  const list = $("vocabWordsList"); list.textContent = "";
+  WORDS.filter(w => w.cat === c).forEach(w => {
+    const li = document.createElement("li");
+    const a = document.createElement("b"); a.textContent = w.fr.join(" / ");
+    const sp = document.createElement("span"); sp.textContent = w.es.slice(0, 2).join(" / ");
+    const btn = document.createElement("button"); btn.type = "button"; btn.textContent = "🔊";
+    btn.setAttribute("aria-label", `Escuchar ${w.fr[0]}`);
+    btn.onclick = () => say(w.fr.join(", "));
+    li.append(a, sp, btn);
+    list.append(li);
+  });
+  $("vocabPrevBlock").classList.add("hidden");
+  $("vocabNextBlock").classList.add("hidden");
+  window.scrollTo(0, 0);
+}
+$("vocabWordsBack").onclick = renderVocabLetters;
+
+/* ====================== Sopa de letras ====================== */
+// Config propia (wsCfg), separada de cfg de Ejercicios para no interferir.
+const wsCfg = { mode: "category", difficulty: "normal", letters: new Set(["A"]), categories: new Set(CATEGORIES) };
+const WS_DIRS = [[1, 0], [-1, 0], [0, 1], [0, -1], [1, 1], [-1, -1], [1, -1], [-1, 1]];
+// Dificultad: más palabras + rejilla más grande = más difícil.
+const WS_DIFFICULTY = {
+  easy: { words: 5, minSize: 8, maxSize: 9 },
+  normal: { words: 8, minSize: 10, maxSize: 12 },
+  hard: { words: 12, minSize: 12, maxSize: 14 },
+};
+// El tamaño nunca puede ser menor que la palabra más larga + 1 (si no, no cabría nunca) —
+// por eso maxSize es un techo "blando", no absoluto.
+function wsGridSize(diff, longest) {
+  const size = Math.min(diff.maxSize, Math.max(diff.minSize, longest + 2));
+  return Math.max(size, longest + 1);
+}
+let wsState = null;
+
+// Solo palabras de una sola palabra (sin espacios) y de longitud razonable para la rejilla.
+// La rejilla usa la palabra sin artículo, sin acentos ni guiones (la tête -> TETE).
+const wsWord = w => norm(w.fr[0]).toUpperCase();
+function wsEligible(w) { const x = wsWord(w); return /^[A-Z]+$/.test(x) && x.length >= 3 && x.length <= 10; }
+function wsPool() {
+  const base = wsCfg.mode === "category"
+    ? WORDS.filter(w => w.cat && wsCfg.categories.has(w.cat))
+    : WORDS.filter(w => wsCfg.letters.has(letterOf(w)));
+  return base.filter(wsEligible);
+}
+
+function buildWsLetters() {
+  const box = $("wsLetters"); box.textContent = "";
+  LETTERS.forEach(L => {
+    const n = WORDS.filter(w => letterOf(w) === L && wsEligible(w)).length;
+    const b = document.createElement("button");
+    b.className = "letter"; b.type = "button"; b.dataset.l = L;
+    b.setAttribute("aria-pressed", wsCfg.letters.has(L));
+    b.append(L); const s = document.createElement("small"); s.textContent = n; b.append(s);
+    b.onclick = () => { wsCfg.letters.has(L) ? wsCfg.letters.delete(L) : wsCfg.letters.add(L); refreshWsConfig(); };
+    box.append(b);
+  });
+}
+function buildWsCategories() {
+  const box = $("wsCategories"); box.textContent = "";
+  CATEGORIES.forEach(c => {
+    const n = WORDS.filter(w => w.cat === c && wsEligible(w)).length;
+    const meta = CATEGORY_META[c] || { emoji: "🏷️", label: c };
+    const b = document.createElement("button");
+    b.className = "opt"; b.type = "button"; b.dataset.cat = c;
+    b.setAttribute("aria-pressed", wsCfg.categories.has(c));
+    b.innerHTML = `${meta.emoji} ${meta.label}<small>${n}</small>`;
+    b.onclick = () => { wsCfg.categories.has(c) ? wsCfg.categories.delete(c) : wsCfg.categories.add(c); refreshWsConfig(); };
+    box.append(b);
+  });
+}
+function refreshWsConfig() {
+  document.querySelectorAll("#wsModeSeg .opt").forEach(b => b.setAttribute("aria-pressed", b.dataset.mode === wsCfg.mode));
+  document.querySelectorAll("#wsDifficultySeg .opt").forEach(b => b.setAttribute("aria-pressed", b.dataset.diff === wsCfg.difficulty));
+  $("wsLettersBox").classList.toggle("hidden", wsCfg.mode !== "letters");
+  $("wsCategoriesBox").classList.toggle("hidden", wsCfg.mode !== "category");
+  document.querySelectorAll("#wsLetters .letter").forEach(b => b.setAttribute("aria-pressed", wsCfg.letters.has(b.dataset.l)));
+  document.querySelectorAll("#wsCategories .opt").forEach(b => b.setAttribute("aria-pressed", wsCfg.categories.has(b.dataset.cat)));
+  const n = wsPool().length;
+  const target = WS_DIFFICULTY[wsCfg.difficulty].words;
+  $("wsPoolInfo").textContent = n < 4
+    ? `Solo ${n} palabras válidas — elige más letras o temas (hacen falta al menos 4).`
+    : `${n} palabras disponibles · esta sopa usará ${Math.min(n, target)}`;
+  $("wsStartBtn").disabled = n < 4;
+}
+document.querySelectorAll("#wsDifficultySeg .opt").forEach(b => b.onclick = () => { wsCfg.difficulty = b.dataset.diff; refreshWsConfig(); });
+document.querySelectorAll("#wsModeSeg .opt").forEach(b => b.onclick = () => { wsCfg.mode = b.dataset.mode; refreshWsConfig(); });
+function wsShowConfig() {
+  $("wsPuzzleBox").classList.add("hidden");
+  $("wsConfig").classList.remove("hidden");
+  refreshWsConfig();
+}
+$("wsBackBtn").onclick = wsShowConfig;
+
+// Intenta colocar `word` en `grid` (size x size) en una dirección (dr,dc) válida;
+// puede cruzarse con una palabra ya puesta si coincide la letra. Varios intentos al azar.
+function tryPlace(grid, size, word, dr, dc) {
+  const len = word.length;
+  const rMin = dr === 1 ? 0 : dr === -1 ? len - 1 : 0;
+  const rMax = dr === 1 ? size - len : dr === -1 ? size - 1 : size - 1;
+  const cMin = dc === 1 ? 0 : dc === -1 ? len - 1 : 0;
+  const cMax = dc === 1 ? size - len : dc === -1 ? size - 1 : size - 1;
+  if (rMin > rMax || cMin > cMax) return null;
+  const r0 = rMin + (Math.random() * (rMax - rMin + 1) | 0);
+  const c0 = cMin + (Math.random() * (cMax - cMin + 1) | 0);
+  const cells = [];
+  for (let i = 0; i < len; i++) {
+    const r = r0 + dr * i, c = c0 + dc * i, existing = grid[r][c];
+    if (existing !== null && existing !== word[i]) return null;
+    cells.push([r, c]);
+  }
+  return cells;
+}
+function placeWord(grid, size, word) {
+  for (const [dr, dc] of shuffle(WS_DIRS.slice())) {
+    for (let attempt = 0; attempt < 30; attempt++) {
+      const cells = tryPlace(grid, size, word, dr, dc);
+      if (cells) { cells.forEach(([r, c], i) => grid[r][c] = word[i]); return cells; }
+    }
+  }
+  return null;
+}
+
+function startWordSearch() {
+  const diff = WS_DIFFICULTY[wsCfg.difficulty];
+  const chosen = shuffle(wsPool().slice()).slice(0, diff.words);
+  const longest = Math.max(...chosen.map(w => wsWord(w).length));
+  const size = wsGridSize(diff, longest);
+  const grid = Array.from({ length: size }, () => Array(size).fill(null));
+  const words = [];
+  shuffle(chosen.slice()).sort((a, b) => wsWord(b).length - wsWord(a).length).forEach(w => {
+    const word = wsWord(w);
+    const cells = placeWord(grid, size, word);
+    if (cells) words.push({ word, es: w.es.slice(0, 2).join(" / "), found: false, cells });
+  });
+  for (let r = 0; r < size; r++) for (let c = 0; c < size; c++) {
+    if (grid[r][c] === null) grid[r][c] = String.fromCharCode(65 + (Math.random() * 26 | 0));
+  }
+  wsState = { grid, size, words, selecting: false, start: null, curPath: null };
+  renderWsGrid();
+  renderWsWordList();
+  $("wsConfig").classList.add("hidden");
+  $("wsPuzzleBox").classList.remove("hidden");
+  window.scrollTo(0, 0);
+}
+$("wsStartBtn").onclick = startWordSearch;
+$("wsNewBtn").onclick = startWordSearch;
+
+function renderWsGrid() {
+  const el = $("wsGrid");
+  el.style.gridTemplateColumns = `repeat(${wsState.size}, 1fr)`;
+  el.textContent = "";
+  const cellEls = [];
+  for (let r = 0; r < wsState.size; r++) {
+    const row = [];
+    for (let c = 0; c < wsState.size; c++) {
+      const div = document.createElement("div");
+      div.className = "ws-cell"; div.textContent = wsState.grid[r][c];
+      div.dataset.r = r; div.dataset.c = c;
+      el.append(div); row.push(div);
+    }
+    cellEls.push(row);
+  }
+  wsState.cellEls = cellEls;
+}
+function renderWsWordList() {
+  const ul = $("wsWordList"); ul.textContent = "";
+  wsState.words.forEach(w => {
+    const li = document.createElement("li");
+    if (w.found) li.className = "found";
+    li.textContent = w.es;
+    ul.append(li);
+  });
+  $("wsFoundCount").textContent = wsState.words.filter(w => w.found).length;
+  $("wsTotalCount").textContent = wsState.words.length;
+}
+
+function wsStraightPath(start, end) {
+  const [r0, c0] = start, [r1, c1] = end;
+  const dr = Math.sign(r1 - r0), dc = Math.sign(c1 - c0);
+  if (dr === 0 && dc === 0) return [start];
+  if (dr !== 0 && dc !== 0 && Math.abs(r1 - r0) !== Math.abs(c1 - c0)) return null;
+  const len = Math.max(Math.abs(r1 - r0), Math.abs(c1 - c0)) + 1;
+  const path = [];
+  for (let i = 0; i < len; i++) path.push([r0 + dr * i, c0 + dc * i]);
+  return path;
+}
+function wsClearHighlight() {
+  wsState.cellEls.flat().forEach(el => el.classList.remove("sel"));
+}
+function wsUpdateSelection(current) {
+  wsClearHighlight();
+  const path = wsStraightPath(wsState.start, current);
+  wsState.curPath = path;
+  if (!path) return;
+  path.forEach(([r, c]) => wsState.cellEls[r][c].classList.add("sel"));
+}
+function wsFinalizeSelection() {
+  const path = wsState.curPath;
+  wsClearHighlight();
+  wsState.curPath = null;
+  if (!path || path.length < 2) return;
+  const letters = path.map(([r, c]) => wsState.grid[r][c]).join("");
+  const reversed = letters.split("").reverse().join("");
+  const match = wsState.words.find(w => !w.found && (w.word === letters || w.word === reversed));
+  if (!match) return;
+  match.found = true;
+  path.forEach(([r, c]) => wsState.cellEls[r][c].classList.add("found"));
+  renderWsWordList();
+  sndOk();
+  if (wsState.words.every(w => w.found)) {
+    const pts = wsState.words.length * 5;
+    const d = today(); d.points += pts; db.days[dayKey()] = d; db.total += pts; save();
+    sndWin(); confetti();
+  }
+}
+$("wsGrid").addEventListener("pointerdown", e => {
+  const cell = e.target.closest(".ws-cell");
+  if (!cell || !wsState) return;
+  e.preventDefault();
+  $("wsGrid").setPointerCapture(e.pointerId);
+  wsState.selecting = true;
+  wsState.start = [+cell.dataset.r, +cell.dataset.c];
+  wsUpdateSelection(wsState.start);
+});
+$("wsGrid").addEventListener("pointermove", e => {
+  if (!wsState || !wsState.selecting) return;
+  const el = document.elementFromPoint(e.clientX, e.clientY);
+  const cell = el && el.closest(".ws-cell");
+  if (!cell) return;
+  wsUpdateSelection([+cell.dataset.r, +cell.dataset.c]);
+});
+$("wsGrid").addEventListener("pointerup", () => {
+  if (!wsState || !wsState.selecting) return;
+  wsState.selecting = false;
+  wsFinalizeSelection();
+});
+
+/* ====================== Arranque ====================== */
+buildLetters(); buildCategories(); buildGrammarTopics(); buildWsLetters(); buildWsCategories(); refreshWsConfig(); refreshHome();
+</script>
+</body>
+</html>
