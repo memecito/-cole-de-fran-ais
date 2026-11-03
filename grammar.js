@@ -5,6 +5,30 @@
 // Contenido sacado de las fotos del cuaderno (img/): PORTER, avoir mal,
 // Comment es-tu ?, descripción, carácter, cuerpo y ropa.
 const GRAMMAR = {
+  // Mismo formato que la ficha del examen ("Conjugue au présent le verbe
+  // PORTER"): solo pronombre + verbo. Va primero para que salga por defecto.
+  conjuguePorter: {
+    title: "Conjugue PORTER (como en la ficha)",
+    emoji: "📝",
+    topicId: "porter",
+    items: [
+      { id: "cp1", text: "Je ___ (porter)", answers: ["porte"] },
+      { id: "cp2", text: "Tu ___ (porter)", answers: ["portes"] },
+      { id: "cp3", text: "Il ___ (porter)", answers: ["porte"] },
+      { id: "cp4", text: "Elle ___ (porter)", answers: ["porte"] },
+      { id: "cp5", text: "Nous ___ (porter)", answers: ["portons"] },
+      { id: "cp6", text: "Vous ___ (porter)", answers: ["portez"] },
+      { id: "cp7", text: "Ils ___ (porter)", answers: ["portent"] },
+      { id: "cp8", text: "Elles ___ (porter)", answers: ["portent"] },
+      // al revés: qué pronombre va con cada terminación
+      { id: "cp9", text: "___ portons", answers: ["nous"] },
+      { id: "cp10", text: "___ portez", answers: ["vous"] },
+      { id: "cp11", text: "___ portes", answers: ["tu"] },
+      { id: "cp12", text: "___ portent (ellos)", answers: ["ils"] },
+      { id: "cp13", text: "___ portent (ellas)", answers: ["elles"] },
+      { id: "cp14", text: "___ porte (yo)", answers: ["je"] },
+    ]
+  },
   porter: {
     title: "Verbo PORTER (llevar)",
     emoji: "👕",
