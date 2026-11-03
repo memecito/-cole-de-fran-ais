@@ -26,6 +26,36 @@ const TOPICS = [
     `
   },
   {
+    id: "porterParler",
+    emoji: "⚖️",
+    title: "PORTER o PARLER — ¡no los confundas!",
+    html: `
+      <p>Se parecen mucho, pero significan cosas muy distintas:</p>
+      <ul>
+        <li><b>P<u>O</u>RTER</b> = llevar puesto → la <b>O</b> de r<b>O</b>pa 👕</li>
+        <li><b>P<u>A</u>RLER</b> = hablar → la <b>A</b> de h<b>A</b>blar 🗣️</li>
+      </ul>
+      <p>Los dos son verbos en <b>-ER</b>, así que llevan <b>las mismas terminaciones</b>. Lo único que cambia es el principio: <b>port-</b> o <b>parl-</b>.</p>
+      <table>
+        <thead><tr><th></th><th>PORTER 👕</th><th>PARLER 🗣️</th></tr></thead>
+        <tbody>
+          <tr><td>je</td><td><b>port</b>e</td><td><b>parl</b>e</td></tr>
+          <tr><td>tu</td><td><b>port</b>es</td><td><b>parl</b>es</td></tr>
+          <tr><td>il / elle</td><td><b>port</b>e</td><td><b>parl</b>e</td></tr>
+          <tr><td>nous</td><td><b>port</b>ons</td><td><b>parl</b>ons</td></tr>
+          <tr><td>vous</td><td><b>port</b>ez</td><td><b>parl</b>ez</td></tr>
+          <tr><td>ils / elles</td><td><b>port</b>ent</td><td><b>parl</b>ent</td></tr>
+        </tbody>
+      </table>
+      <p>💡 ¿Cuál uso? Mira lo que viene después:</p>
+      <ul>
+        <li>Si viene <b>ropa</b> (un pull, des baskets, des lunettes…) → <b>PORTER</b>: <i>Je <b>porte</b> un jean.</i></li>
+        <li>Si viene un <b>idioma</b> o <b>con quién</b> hablas (français, avec ma copine…) → <b>PARLER</b>: <i>Je <b>parle</b> français.</i></li>
+      </ul>
+      <p>⚠️ Ellos/ellas: <b>-ent</b> (portent, parlent), nunca "-ant".</p>
+    `
+  },
+  {
     id: "avoirMal",
     emoji: "🤕",
     title: "Avoir mal à la / au / aux = tener dolor en",

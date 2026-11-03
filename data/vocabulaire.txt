@@ -93,6 +93,7 @@ des lunettes|unas gafas,gafas|accessoires
 une montre|un reloj|accessoires
 # --- verbes et structures ---
 porter|llevar,llevar puesto|verbes
+parler|hablar|verbes
 avoir|tener|verbes
 être|ser,estar|verbes
 avoir mal|tener dolor,doler|verbes

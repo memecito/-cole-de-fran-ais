@@ -29,6 +29,46 @@ const GRAMMAR = {
       { id: "cp14", text: "___ porte (yo)", answers: ["je"] },
     ]
   },
+  // PARLER se añade (no está en el cuaderno) para que no lo confunda con
+  // PORTER: en la ficha escribió parle/parlons/parlant al conjugar PORTER.
+  conjugueParler: {
+    title: "Conjugue PARLER (hablar)",
+    emoji: "🗣️",
+    topicId: "porterParler",
+    items: [
+      { id: "cl1", text: "Je ___ (parler)", answers: ["parle"] },
+      { id: "cl2", text: "Tu ___ (parler)", answers: ["parles"] },
+      { id: "cl3", text: "Il ___ (parler)", answers: ["parle"] },
+      { id: "cl4", text: "Elle ___ (parler)", answers: ["parle"] },
+      { id: "cl5", text: "Nous ___ (parler)", answers: ["parlons"] },
+      { id: "cl6", text: "Vous ___ (parler)", answers: ["parlez"] },
+      { id: "cl7", text: "Ils ___ (parler)", answers: ["parlent"] },
+      { id: "cl8", text: "Elles ___ (parler)", answers: ["parlent"] },
+    ]
+  },
+  porterOuParler: {
+    title: "¿PORTER o PARLER?",
+    emoji: "⚖️",
+    topicId: "porterParler",
+    items: [
+      { id: "pp1", text: "Je ___ un pull.", answers: ["porte"] },
+      { id: "pp2", text: "Je ___ français.", answers: ["parle"] },
+      { id: "pp3", text: "Nous ___ des baskets.", answers: ["portons"] },
+      { id: "pp4", text: "Nous ___ avec la prof.", answers: ["parlons"] },
+      { id: "pp5", text: "Tu ___ espagnol ?", answers: ["parles"] },
+      { id: "pp6", text: "Tu ___ des lunettes ?", answers: ["portes"] },
+      { id: "pp7", text: "Elle ___ une montre.", answers: ["porte"] },
+      { id: "pp8", text: "Elle ___ avec sa copine.", answers: ["parle"] },
+      { id: "pp9", text: "Vous ___ anglais ?", answers: ["parlez"] },
+      { id: "pp10", text: "Vous ___ un survêtement.", answers: ["portez"] },
+      { id: "pp11", text: "Ils ___ un jean.", answers: ["portent"] },
+      { id: "pp12", text: "Ils ___ beaucoup en classe.", answers: ["parlent"] },
+      { id: "pp13", text: "Elles ___ au téléphone.", answers: ["parlent"] },
+      { id: "pp14", text: "Elles ___ une veste.", answers: ["portent"] },
+      { id: "pp15", text: "Mon frère ___ un sweat à capuche.", answers: ["porte"] },
+      { id: "pp16", text: "Mes parents ___ français et espagnol.", answers: ["parlent"] },
+    ]
+  },
   porter: {
     title: "Verbo PORTER (llevar)",
     emoji: "👕",
